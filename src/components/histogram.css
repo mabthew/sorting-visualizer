@@ -4,7 +4,12 @@
   height: 90%;
   }
   
-.bar {
+.clearBar {
+  display: inline-block;
+  vertical-align: bottom;
+  }
+
+.prettyBar {
   display: inline-block;
   vertical-align: bottom;
 }
@@ -38,3 +43,9 @@
   cursor: pointer;
 }
 
+.dropdown {
+  padding: 5px;
+  margin: 10px;
+  content: '\f078';
+  color: #000000;
+}
