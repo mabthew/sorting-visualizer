@@ -11,6 +11,8 @@
 
 #options {
   height: 10%;
+  background-color: rgb(255, 255, 255);
+  color: black;
 }
 
 
@@ -34,7 +36,7 @@
   height: 15px;
   border-color: red;
   border-radius: 50%; 
-  background: rgb(37, 37, 37);
+  background: #3a3a3a;
   cursor: pointer;
 }
 

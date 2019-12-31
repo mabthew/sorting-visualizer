@@ -84,7 +84,6 @@ export default class Histogram extends React.Component {
           height: height,
           width: width
         };
-        
   
         bars.push(<div className="bar" key={i} style={divStyle}></div>); 
       }
@@ -213,31 +212,24 @@ export default class Histogram extends React.Component {
           }, (i) * this.state.speed); 
         }
       }
+      setTimeout(() => {
+        this.setState({busy: false});
+      }, swaps.length * this.state.speed);
+
     } else {
+      let count = 0;
       for (let i = 0; i < swaps.length; i++) {
         if (swaps[i][0] === "swap") {
+          count++;
           setTimeout(() => {
             this.swap(x, swaps[i][1], swaps[i][2]);
-          }, i * this.state.speed);
-        } else if (swaps[i][0] === "compare") {
-          setTimeout(() => {
-            
-          }, (i - 1) * this.state.speed);
-       } else if (swaps[i][0] === "uncompare") {
-        setTimeout(() => {
-          
-        }, i * this.state.speed); 
-       } else if (swaps[i][0] === "sorted") {
-        setTimeout(() => {
-  
-        }, (i) * this.state.speed); 
+          }, count * this.state.speed);
        }
       }
+      setTimeout(() => {
+        this.setState({busy: false});
+      }, count * this.state.speed);
     }
-    
-    setTimeout(() => {
-      this.setState({busy: false});
-    }, swaps.length * this.state.speed);
   }
 
   sort() {
