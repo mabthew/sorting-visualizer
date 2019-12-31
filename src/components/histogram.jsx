@@ -14,7 +14,7 @@ export default class Histogram extends React.Component {
       bars: [],
       swaps: [],
       comparisons: [],
-      speed: 1050,
+      speed: 1000/5,
       size: 12,
       busy: false,
       displayStyles: [],
@@ -31,6 +31,7 @@ export default class Histogram extends React.Component {
     this.changeSize = this.changeSize.bind(this);
     this.changeStyle = this.changeStyle.bind(this);
     this.changeAlgorithm = this.changeAlgorithm.bind(this);
+    this.setComparing = this.setComparing.bind(this);
   }
   
   componentDidMount() {
@@ -53,11 +54,9 @@ export default class Histogram extends React.Component {
 
   createBars(displayStyle) {
     let bars = [];
-    let displayName;
 
     if (displayStyle === "Clear") {
 
-      displayName="clearBar";
       for (let i = 0; i < this.state.size; i++) {
       
         let color= `rgb(255,255,255)`;
@@ -71,10 +70,9 @@ export default class Histogram extends React.Component {
         };
         
   
-        bars.push(<div className={displayName} key={i} style={divStyle}></div>); 
+        bars.push(<div className="bar" key={i} style={divStyle}></div>); 
       }
     } else {
-      displayName="prettyBar";
       for (let i = 0; i < this.state.size; i++) {
         
         let color= calculateColor(i, this.state.bars.length);
@@ -87,7 +85,7 @@ export default class Histogram extends React.Component {
         };
         
   
-        bars.push(<div className={displayName} key={i} style={divStyle}></div>); 
+        bars.push(<div className="bar" key={i} style={divStyle}></div>); 
       }
     }
 
@@ -170,6 +168,12 @@ export default class Histogram extends React.Component {
     this.setState({bars: newBars});
   }
 
+  setComparing(x,i, j) {
+    console.log(x[i]);
+    x[i].props = x[j].props;
+    this.setState({bars: x});
+  }
+  
   swap(x,i, j) {
     let temp = x[i];
     x[i] = x[j];
@@ -179,10 +183,30 @@ export default class Histogram extends React.Component {
 
   performSwaps(swaps) {
     let x = this.state.bars.slice();
+    const arrayBars = document.getElementsByClassName('bar');
     for (let i = 0; i < swaps.length; i++) {
+      if (swaps[i][0] === "swap") {
+        setTimeout(() => {
+          arrayBars[swaps[i][1]].style.backgroundColor = `rgb(0, 255, 0)`;
+          arrayBars[swaps[i][2]].style.backgroundColor = `rgb(0, 255, 0)`;
+        }, (i-.66) * this.state.speed);
+        setTimeout(() => {
+          this.swap(x, swaps[i][1], swaps[i][2]);
+        }, i * this.state.speed);
+      } else if (swaps[i][0] === "compare") {
+        var barOneColor = arrayBars[swaps[i][1]].style.backgroundColor;
+        var barTwoColor = arrayBars[swaps[i][2]].style.backgroundColor;
+        setTimeout(() => {
+          arrayBars[swaps[i][1]].style.backgroundColor = `rgb(255, 0, 0)`;
+          arrayBars[swaps[i][2]].style.backgroundColor = `rgb(255, 0, 0)`;
+        }, (i - 1) * this.state.speed);
+     } else if (swaps[i][0] === "uncompare") {
       setTimeout(() => {
-        this.swap(x, swaps[i][0], swaps[i][1]);
-      }, i * this.state.speed);
+        arrayBars[swaps[i][1]].style.backgroundColor = barOneColor;
+        arrayBars[swaps[i][2]].style.backgroundColor = barTwoColor;
+      }, (i) * this.state.speed); 
+     }
+      
     }
     setTimeout(() => {
       this.setState({busy: false});
@@ -209,14 +233,14 @@ export default class Histogram extends React.Component {
   render() {
     return (
       <div id="visualizer">
+        {this.state.speed}
         <div id="options">
           Speed:
-          <input type="range" min=".5" max="2000" defaultValue="1050" className="slider" id="speedRange" onChange={this.changeSpeed} disabled={this.state.busy}></input>
+          <input type="range" min="1" max="1000" defaultValue={this.state.speed} className="slider" id="speedRange" onChange={this.changeSpeed} disabled={this.state.busy}></input>
           Histogram Size:
           <input type="range" min="4" max="250" defaultValue="12" className="slider" id="sizeRange" onChange={this.changeSize} disabled={this.state.busy}></input>
-          <Button onClick={this.shuffle} variant="primary">Shuffle</Button>
-          <Button onClick={this.sort} variant="secondary">Solve</Button>
-          <Button onClick={this.move} variant="secondary">Swap</Button>
+          <Button onClick={this.shuffle} variant="primary" disabled={this.state.busy}>Shuffle</Button>
+          <Button onClick={this.sort} variant="secondary" disabled={this.state.busy}>Solve</Button>
           <div className="dropdown">
             Algorithm: 	&nbsp;
             <select onChange={(e) => this.changeAlgorithm(e.target.value)}>

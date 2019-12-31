@@ -4,15 +4,10 @@
   height: 90%;
   }
   
-.clearBar {
+.bar {
   display: inline-block;
   vertical-align: bottom;
   }
-
-.prettyBar {
-  display: inline-block;
-  vertical-align: bottom;
-}
 
 #options {
   height: 10%;
