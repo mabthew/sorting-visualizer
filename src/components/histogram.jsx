@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button} from 'react-bootstrap';
 import bubbleSort from "../algorithms/bubbleSort";
-import insertionSort from "../algorithms/bubbleSort";
+import insertionSort from "../algorithms/insertionSort";
 import selectionSort from "../algorithms/selectionSort";
 import './histogram.css';
 
