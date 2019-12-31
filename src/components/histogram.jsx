@@ -31,7 +31,6 @@ export default class Histogram extends React.Component {
     this.changeSize = this.changeSize.bind(this);
     this.changeStyle = this.changeStyle.bind(this);
     this.changeAlgorithm = this.changeAlgorithm.bind(this);
-    this.setComparing = this.setComparing.bind(this);
   }
   
   componentDidMount() {
@@ -57,8 +56,11 @@ export default class Histogram extends React.Component {
 
     if (displayStyle === "Clear") {
 
+      const arrayBars = document.getElementsByClassName('bar')
+      for (let i = 0; i < arrayBars.length; i++) {
+        arrayBars[i].style.backgroundColor = `rgb(255, 255, 255)`;
+      }
       for (let i = 0; i < this.state.size; i++) {
-      
         let color= `rgb(255,255,255)`;
         let height = (window.innerHeight - document.getElementById("options").offsetHeight) / this.state.size * (i + 1);
         let width = window.innerWidth / this.state.size / 2;
@@ -68,8 +70,7 @@ export default class Histogram extends React.Component {
           width: width,
           margin: width / 4,
         };
-        
-  
+
         bars.push(<div className="bar" key={i} style={divStyle}></div>); 
       }
     } else {
@@ -113,11 +114,9 @@ export default class Histogram extends React.Component {
     this.setState({selectedStyle: displayStyle});
 
     let bars = [];
-    let displayName;
 
     if (displayStyle === "Clear") {
 
-      displayName="clearBar";
       for (let i = 0; i < this.state.size; i++) {
       
         let color= `rgb(255,255,255)`;
@@ -131,10 +130,9 @@ export default class Histogram extends React.Component {
         };
         
   
-        bars[i] = <div className={displayName} key={i} style={divStyle}></div>; 
+        bars[i] = <div className="bar" key={i} style={divStyle}></div>; 
       }
     } else {
-      displayName="prettyBar";
       for (let i = 0; i < this.state.size; i++) {
         
         let color= calculateColor(this.state.bars[i].key, this.state.bars.length);
@@ -147,7 +145,7 @@ export default class Histogram extends React.Component {
         };
         
   
-        bars[i] = <div className={displayName} key={i} style={divStyle}></div>; 
+        bars[i] = <div className="bar" key={i} style={divStyle}></div>; 
       }
     }
 
@@ -157,6 +155,13 @@ export default class Histogram extends React.Component {
   // https://javascript.info/task/shuffle
   // make the array an array of BARS instead of heights?
   shuffle() {
+    if (this.state.selectedStyle === "Clear") {
+      const arrayBars = document.getElementsByClassName('bar')
+      for (let i = 0; i < arrayBars.length; i++) {
+        arrayBars[i].style.backgroundColor = `rgb(255, 255, 255)`;
+      }
+    }
+
     const newBars = this.state.bars.slice();
     for (let i = this.state.size - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -166,12 +171,6 @@ export default class Histogram extends React.Component {
       newBars[j] = temp;
     }
     this.setState({bars: newBars});
-  }
-
-  setComparing(x,i, j) {
-    console.log(x[i]);
-    x[i].props = x[j].props;
-    this.setState({bars: x});
   }
   
   swap(x,i, j) {
@@ -184,30 +183,58 @@ export default class Histogram extends React.Component {
   performSwaps(swaps) {
     let x = this.state.bars.slice();
     const arrayBars = document.getElementsByClassName('bar');
-    for (let i = 0; i < swaps.length; i++) {
-      if (swaps[i][0] === "swap") {
+    if (this.state.selectedStyle === "Clear") {
+      for (let i = 0; i < swaps.length; i++) {
+        if (swaps[i][0] === "swap") {
+          setTimeout(() => {
+            arrayBars[swaps[i][1]].style.backgroundColor = `rgb(0, 255, 0)`;
+            arrayBars[swaps[i][2]].style.backgroundColor = `rgb(0, 255, 0)`;
+          }, (i-.66) * this.state.speed);
+          setTimeout(() => {
+            this.swap(x, swaps[i][1], swaps[i][2]);
+          }, i * this.state.speed);
+        } else if (swaps[i][0] === "compare") {
+          var barOneColor = arrayBars[swaps[i][1]].style.backgroundColor;
+          var barTwoColor = arrayBars[swaps[i][2]].style.backgroundColor;
+          setTimeout(() => {
+            arrayBars[swaps[i][1]].style.backgroundColor = `rgb(255, 0, 0)`;
+            arrayBars[swaps[i][2]].style.backgroundColor = `rgb(255, 0, 0)`;
+          }, (i - 1) * this.state.speed);
+        } else if (swaps[i][0] === "uncompare") {
+          setTimeout(() => {
+            arrayBars[swaps[i][1]].style.backgroundColor = barOneColor;
+            if (swaps[i].length == 3) {
+              arrayBars[swaps[i][2]].style.backgroundColor = barTwoColor;
+            }
+          }, i * this.state.speed); 
+        } else if (swaps[i][0] === "sorted") {
+          setTimeout(() => {
+            arrayBars[swaps[i][1]].style.backgroundColor = `rgb(255, 0, 255)`;
+          }, (i) * this.state.speed); 
+        }
+      }
+    } else {
+      for (let i = 0; i < swaps.length; i++) {
+        if (swaps[i][0] === "swap") {
+          setTimeout(() => {
+            this.swap(x, swaps[i][1], swaps[i][2]);
+          }, i * this.state.speed);
+        } else if (swaps[i][0] === "compare") {
+          setTimeout(() => {
+            
+          }, (i - 1) * this.state.speed);
+       } else if (swaps[i][0] === "uncompare") {
         setTimeout(() => {
-          arrayBars[swaps[i][1]].style.backgroundColor = `rgb(0, 255, 0)`;
-          arrayBars[swaps[i][2]].style.backgroundColor = `rgb(0, 255, 0)`;
-        }, (i-.66) * this.state.speed);
+          
+        }, i * this.state.speed); 
+       } else if (swaps[i][0] === "sorted") {
         setTimeout(() => {
-          this.swap(x, swaps[i][1], swaps[i][2]);
-        }, i * this.state.speed);
-      } else if (swaps[i][0] === "compare") {
-        var barOneColor = arrayBars[swaps[i][1]].style.backgroundColor;
-        var barTwoColor = arrayBars[swaps[i][2]].style.backgroundColor;
-        setTimeout(() => {
-          arrayBars[swaps[i][1]].style.backgroundColor = `rgb(255, 0, 0)`;
-          arrayBars[swaps[i][2]].style.backgroundColor = `rgb(255, 0, 0)`;
-        }, (i - 1) * this.state.speed);
-     } else if (swaps[i][0] === "uncompare") {
-      setTimeout(() => {
-        arrayBars[swaps[i][1]].style.backgroundColor = barOneColor;
-        arrayBars[swaps[i][2]].style.backgroundColor = barTwoColor;
-      }, (i) * this.state.speed); 
-     }
-      
+  
+        }, (i) * this.state.speed); 
+       }
+      }
     }
+    
     setTimeout(() => {
       this.setState({busy: false});
     }, swaps.length * this.state.speed);
@@ -233,7 +260,6 @@ export default class Histogram extends React.Component {
   render() {
     return (
       <div id="visualizer">
-        {this.state.speed}
         <div id="options">
           Speed:
           <input type="range" min="1" max="1000" defaultValue={this.state.speed} className="slider" id="speedRange" onChange={this.changeSpeed} disabled={this.state.busy}></input>

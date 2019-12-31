@@ -17,8 +17,20 @@ function bubbleSort(arr) {
           }
           swaps.push(["uncompare", i, i+1]);
         }
+        swaps.push(["sorted", len])
         len--;
     } while (swapping);
+
+    while (len >= 0) {
+      for (let i = 0; i < len; i++) {
+        swaps.push(["compare", i, i+1])
+        swaps.push(["uncompare", i, i+1])
+      }
+      swaps.push(["sorted", len+1])
+      len--;
+    }
+    swaps.push(["sorted", len+1])
+
     return swaps;
   }
   

@@ -1,6 +1,5 @@
 function selectionSort(arr){
-    var len = arr.length,
-        min;
+    var len = arr.length, min;
 
     var swaps = [];
     
@@ -9,16 +8,22 @@ function selectionSort(arr){
         min = i;
 
         for (let j=i+1; j < len; j++){
+            swaps.push(["compare", j, min])
             if (arr[j].props.style.height < arr[min].props.style.height){
                 min = j;
             }
+            swaps.push(["uncompare", j, min])
         }
         
         if (i !== min){
-            swaps.push([i, min]);
+            swaps.push(["swap", i, min]);
             var temp = arr[i];
             arr[i] = arr[min];
             arr[min] = temp;
+            swaps.push(["uncompare", min])
+            swaps.push(["sorted", i])
+        } else {
+            swaps.push(["sorted", min])
         }
     }
     return swaps;
