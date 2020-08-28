@@ -1,30 +1,33 @@
-function selectionSort(arr){
+function selectionSort(arr) {
     var len = arr.length, min;
 
     var swaps = [];
-    
-    for (let i=0; i < len; i++){
-        
+
+    for (let i = 0; i < len; i++) {
+
         min = i;
 
-        for (let j=i+1; j < len; j++){
+        for (let j = i + 1; j < len; j++) {
             swaps.push(["compare", j, min])
-            if (arr[j].props.style.height < arr[min].props.style.height){
+            if (arr[j].props.style.height < arr[min].props.style.height) {
+                swaps.push(["uncompare", min]);
                 min = j;
             }
             swaps.push(["uncompare", j, min])
         }
-        
-        if (i !== min){
+
+        if (i !== min) {
             swaps.push(["swap", i, min]);
             var temp = arr[i];
             arr[i] = arr[min];
             arr[min] = temp;
-            swaps.push(["uncompare", min])
-            swaps.push(["sorted", i])
+            swaps.push(["uncompare", i])
+            // swaps.push(["sorted", i])
         } else {
-            swaps.push(["sorted", min])
+            swaps.push(["uncompare", min])
+            // swaps.push(["sorted", min])
         }
+
     }
     return swaps;
 }
